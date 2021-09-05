@@ -1,0 +1,258 @@
+import sys
+import time
+import pygame
+pygame.init()
+
+clock = pygame.time.Clock()
+clock.tick(30)
+
+screen_width = 1000
+screen_height = 560
+
+screen = pygame.display.set_mode((screen_width, screen_height))
+pygame.display.set_caption('EcoHack')
+
+# # define font
+font_size = 30
+font = pygame.font.SysFont('menlo', font_size)
+
+
+tiles = [
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+    [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+    [1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+]
+black = pygame.image.load("Black.png")
+row = 0
+
+tile_list = []
+
+
+def main():
+    row_count = 0
+    for row in tiles:
+        col = 0
+        for tile in row:
+            if tile == 1:
+                img = pygame.transform.scale(black, (40, 40))
+                rect = img.get_rect()
+                rect.x = col * 40
+                rect.y = row_count * 40
+                tile = (img, rect)
+                tile_list.append(tile)
+            col += 1
+        row_count += 1
+def draw():
+    for tile in tile_list:
+        screen.blit(tile[0], tile[1])
+tile_size = 40
+class Player(pygame.sprite.Sprite):
+    def __init__(self, x, y):
+        super().__init__()
+        self.img = pygame.image.load("PlayerRight.png")
+        self.rect = self.img.get_rect()
+        self.width = self.img.get_width()
+        self.height = self.img.get_height()
+        self.jumped = False
+        self.speed = 1
+        self.rect.x = x
+        self.rect.y = y
+        self.v = 0
+        self.vel_y = 0
+
+    def update(self):
+        dx = 0
+        dy = 0
+        F = 1 / 2 * 1 * 6 ** 2
+        key = pygame.key.get_pressed()
+        if key[pygame.K_UP] and not self.jumped:
+            self.vel_y = -F
+            self.jumped = True
+        if key[pygame.K_LEFT]:
+            dx -= 5
+            self.img = pygame.image.load("Player.png")
+        if key[pygame.K_RIGHT]:
+            dx += 5
+            self.img = pygame.image.load("PlayerRight.png")
+        self.vel_y += 1
+        if self.vel_y > 10:
+            self.vel_y = 10
+        dy += self.vel_y
+        for tile in tile_list:
+            # check for collision in x axis
+            if tile[1].colliderect(self.rect.x + dx, self.rect.y, self.width, self.height):
+                # check if below the ground i.e jumping
+                dx = 0
+            # check for collision in y axis
+            if tile[1].colliderect(self.rect.x, self.rect.y + dy, self.width, self.height):
+                # check if below the ground i.e jumping
+                if self.vel_y < 0:
+                    dy = tile[1].bottom - self.rect.top
+                    self.vel_y = 0
+                # check if below the ground i.e falling
+                elif self.vel_y >= 0:
+                    dy = tile[1].top - self.rect.bottom
+                    self.vel_y = 0
+                    self.jumped = False
+        self.rect.x += dx
+        self.rect.y += dy
+        if self.rect.bottom >= 560:
+            self.rect.bottom = 560
+            self.jumped = False
+        self.in_air = True
+
+        # Draw the player
+        screen.blit(self.img, self.rect)
+
+
+class Bunny(pygame.sprite.Sprite):
+    def __init__(self, player):
+        super().__init__()
+        self.direction = -1
+        self.img = pygame.image.load("BunnyRight.png")
+        self.rect = self.img.get_rect()
+        self.width = self.img.get_width()
+        self.height = self.img.get_height()
+        self.jumped = False
+        self.speed = 1
+        self.rect.x = 500
+        self.rect.y = 280
+        self.v = 0
+        self.vel_y = 0
+
+    def update(self):
+        dx = 0
+        dy = 0
+
+        self.vel_y += 1
+        if self.vel_y > 10:
+            self.vel_y = 10
+        dy += self.vel_y
+        if not pygame.sprite.collide_rect(self, player):
+
+            self.rect.x += 5*self.direction
+            if self.rect.left <=0:
+                self.direction = 1
+                self.img = pygame.image.load("Bunny.png")
+            elif self.rect.right >= 1000:
+                self.direction = -1
+                self.img = pygame.image.load("BunnyRight.png")
+        else:
+            text = Text("Please help me clean up my land, \n"
+                        "it has trash strewn everywhere!", font, 500, 100, 40)
+
+            text.draw_text()
+            return True
+        for tile in tile_list:
+            # check for collision in x axis
+            if tile[1].colliderect(self.rect.x + dx, self.rect.y, self.width, self.height):
+                # check if below the ground i.e jumping
+                dx = 0
+            # check for collision in y axis
+            if tile[1].colliderect(self.rect.x, self.rect.y + dy, self.width, self.height):
+                # check if below the ground i.e jumping
+                if self.vel_y < 0:
+                    dy = tile[1].bottom - self.rect.top
+                    self.vel_y = 0
+                # check if below the ground i.e falling
+                elif self.vel_y >= 0:
+                    dy = tile[1].top - self.rect.bottom
+                    self.vel_y = 0
+                    self.jumped = False
+        self.rect.x += dx
+        self.rect.y += dy
+        if self.rect.bottom >= 560:
+            self.rect.bottom = 560
+            self.jumped = False
+        self.in_air = True
+
+        # Draw the player
+        screen.blit(self.img, self.rect)
+
+
+class Text:
+    def __init__(self, text, font, x, y, fsize):
+
+        self.font = font
+        self.text = text
+        self.x = x
+        self.y = y
+        self.fsize = fsize
+        self.img = 0
+        self.rect = 0
+
+    def draw_text(self):
+        lines = self.text.splitlines()
+        for i, l in enumerate(lines):
+            self.img = font.render(l, False, (255, 255, 255))
+            self.rect = self.img.get_rect()
+            self.rect.center = (self.x, self.y)
+            screen.blit(self.img, (self.rect.x, self.rect.y + self.fsize * (i - (len(lines) - 2))))
+
+
+
+class Button:
+    def __init__(self, x, y, image):
+        self.img = pygame.image.load(image).convert()
+        # self.img = pygame.transform.scale(self.img, (72, 48))
+        self.rect = self.img.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+        self.clicked = False
+
+    def draw(self):
+        action = False
+
+        # get mouse position
+        pos = pygame.mouse.get_pos()
+        # check mouseover and clicked conditions
+        if self.rect.collidepoint(pos):
+            if pygame.mouse.get_pressed(3)[0] == 1 and self.clicked == False:
+                action = True
+                self.clicked = True
+        if pygame.mouse.get_pressed(3)[0] == 0:
+            self.clicked = False
+        # draw button
+        screen.blit(self.img, self.rect)
+        return action
+
+
+text = Text("People all around the have thrown\n"
+            "trash around the  Animals all around\n"
+            "the have died and the is in \n"
+            "A state of emergency.", font, 500, 280, 40)
+
+text.draw_text()
+
+pygame.display.update()
+time.sleep(3)
+player = Player(120, 20)
+bunny = Bunny(player)
+background = pygame.image.load("Background.jpeg")
+main()
+help_btn = Button(230, 180, "Help.png")
+ignore_btn = Button(560, 180, "Ignore.png")
+while True:
+    screen.blit(background, (0, 0))
+    draw()
+
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            sys.exit()
+    player.update()
+    if bunny.update():
+        help_btn.draw()
+        ignore_btn.draw()
+    pygame.display.update()
