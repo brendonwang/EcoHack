@@ -16,7 +16,7 @@ pygame.display.set_caption('EcoHack')
 
 
 def asset_path(file_name):
-    file_name = os.path.join('asset', file_name);
+    file_name = os.path.join('asset', file_name)
     if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
         file_name = os.path.join(getattr(sys, '_MEIPASS'), file_name)
     return file_name
@@ -338,14 +338,14 @@ def level2():
 
 
 text = Text("People all around the have thrown\n"
-            "trash around the  Animals all around\n"
-            "the have died and the is in \n"
-            "A state of emergency.", font, 500, 280, 40)
+            "trash around the world. Animals all around\n"
+            "the world have died and the world is in \n"
+            "a state of emergency.", font, 500, 280, 40)
 
 text.draw_text()
 
 pygame.display.update()
-time.sleep(0)  # Change This in Releases
+time.sleep(9)
 player = Player(120, 20)
 bunny = Bunny(player)
 bunny_group = pygame.sprite.Group()
