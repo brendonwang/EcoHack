@@ -16,6 +16,11 @@ python main.py
 conda install pyinstaller
 ```
  * release
+ mac/linux
  ```
  pyinstaller --onefile -n EcoHack  --add-data "asset/*.*:./asset"  main.py
+ ```
+ windows
+ ```
+ pyinstaller --onefile -n EcoHack  --add-data "asset/*.*;./asset"  main.py
  ```
