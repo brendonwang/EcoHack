@@ -269,7 +269,7 @@ text = Text("People all around the have thrown\n"
 text.draw_text()
 
 pygame.display.update()
-time.sleep(3)
+time.sleep(9)
 player = Player(120, 20)
 bunny = Bunny(player)
 bunny_group = pygame.sprite.Group()
