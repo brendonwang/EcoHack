@@ -327,13 +327,14 @@ while True:
         break
     if score == 6:
         screen.fill((0, 0, 0))
-        while True:
-            text = Text("You Beat Level One!\n"
+        text = Text("You Beat Level One!\n"
                         "You have to buy level 2 and 3\n"
                         "but that feature hasn't been\n"
                         "added yet!\n", font, 500, 280, font_size)
-            text.draw_text()
-            pygame.display.update()
+        text.draw_text()
+        pygame.display.update()
+        time.sleep(5)
+        sys.exit(0)
     text = font.render(f"X{score}", False, (255, 255, 255))
     screen.blit(text, (940, 15))
     screen.blit(coin, coin_rect)
