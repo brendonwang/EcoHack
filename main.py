@@ -320,7 +320,7 @@ while True:
     if pygame.sprite.spritecollide(player, trash_group, True):
         score += 1
     if pygame.sprite.spritecollide(player, bag_group, True):
-        score += 1
+        score += 2
     if health==0:
         text = Text("You died", font, 500, 280, font_size)
         time.sleep(5)
