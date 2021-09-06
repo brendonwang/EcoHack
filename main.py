@@ -1,6 +1,7 @@
 import sys
 import time
 import pygame
+import os
 pygame.init()
 
 clock = pygame.time.Clock()
@@ -12,9 +13,14 @@ screen_height = 560
 screen = pygame.display.set_mode((screen_width, screen_height))
 pygame.display.set_caption('EcoHack')
 
+def asset_path(file_name):
+    file_name=os.path.join('asset', file_name);
+    if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
+        file_name = os.path.join(getattr(sys, '_MEIPASS'), file_name)
+    return file_name
 # # define font
 font_size = 40
-font = pygame.font.Font("Font.ttf", font_size)
+font = pygame.font.Font(asset_path("Font.ttf"), font_size)
 
 
 tiles = [
@@ -33,7 +39,7 @@ tiles = [
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 ]
-black = pygame.image.load("Black.png")
+black = pygame.image.load(asset_path("Black.png"))
 row = 0
 
 tile_list = []
@@ -66,7 +72,7 @@ tile_size = 40
 class Player():
     def __init__(self, x, y):
         super(Player, self).__init__()
-        self.img = pygame.image.load("PlayerRight.png")
+        self.img = pygame.image.load(asset_path("PlayerRight.png"))
         self.rect = self.img.get_rect()
         self.width = self.img.get_width()
         self.height = self.img.get_height()
@@ -87,10 +93,10 @@ class Player():
             self.jumped = True
         if key[pygame.K_LEFT]:
             dx -= 5
-            self.img = pygame.image.load("Player.png")
+            self.img = pygame.image.load(asset_path("Player.png"))
         if key[pygame.K_RIGHT]:
             dx += 5
-            self.img = pygame.image.load("PlayerRight.png")
+            self.img = pygame.image.load(asset_path("PlayerRight.png"))
         self.vel_y += 1
         if self.vel_y > 10:
             self.vel_y = 10
@@ -139,7 +145,7 @@ class Bunny(pygame.sprite.Sprite):
     def __init__(self, player):
         super(Bunny, self).__init__()
         self.direction = -1
-        self.img = pygame.image.load("BunnyRight.png")
+        self.img = pygame.image.load(asset_path("BunnyRight.png"))
         self.rect = self.img.get_rect()
         self.width = self.img.get_width()
         self.height = self.img.get_height()
@@ -163,10 +169,10 @@ class Bunny(pygame.sprite.Sprite):
             self.rect.x += 5*self.direction
             if self.rect.left <=0:
                 self.direction = 1
-                self.img = pygame.image.load("Bunny.png")
+                self.img = pygame.image.load(asset_path("Bunny.png"))
             elif self.rect.right >= 1000:
                 self.direction = -1
-                self.img = pygame.image.load("BunnyRight.png")
+                self.img = pygame.image.load(asset_path("BunnyRight.png"))
 
         for tile in tile_list:
             # check for collision in x axis
@@ -274,18 +280,18 @@ player = Player(120, 20)
 bunny = Bunny(player)
 bunny_group = pygame.sprite.Group()
 bunny_group.add(bunny)
-background = pygame.image.load("Background.png")
-trash = pygame.image.load("Trash.png")
-bag = pygame.image.load("Bag.png")
+background = pygame.image.load(asset_path("Background.png"))
+trash = pygame.image.load(asset_path("Trash.png"))
+bag = pygame.image.load(asset_path("Bag.png"))
 main(tiles)
-help_btn = Button(230, 180, "Help.png")
-ignore_btn = Button(560, 180, "Ignore.png")
+help_btn = Button(230, 180, asset_path("Help.png"))
+ignore_btn = Button(560, 180, asset_path("Ignore.png"))
 health = 3
-health_img = pygame.transform.scale(pygame.image.load("health.png"), (39, 30))
+health_img = pygame.transform.scale(pygame.image.load(asset_path("health.png")), (39, 30))
 bag_group = pygame.sprite.Group()
 trash_group = pygame.sprite.Group()
 bunny_hit = False
-coin = pygame.image.load("Coin.png")
+coin = pygame.image.load(asset_path("Coin.png"))
 coin = pygame.transform.scale(coin, (40, 40))
 coin_rect = coin.get_rect()
 coin_rect.x = 900
