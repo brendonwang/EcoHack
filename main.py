@@ -137,9 +137,13 @@ class Player(pygame.sprite.Sprite):
                     self.jumped = False
         self.rect.x += dx
         self.rect.y += dy
-        if self.rect.bottom >= 560:
-            self.rect.bottom = 560
+        if self.rect.bottom >= 580:
+            self.rect.bottom = 580
             self.jumped = False
+        if self.rect.right >= 1000:
+            self.rect.right = 1000
+        if self.rect.left <= 0:
+            self.rect.left = 0
         self.in_air = True
 
         # Draw the player
