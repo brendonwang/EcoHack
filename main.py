@@ -13,8 +13,8 @@ screen = pygame.display.set_mode((screen_width, screen_height))
 pygame.display.set_caption('EcoHack')
 
 # # define font
-font_size = 30
-font = pygame.font.SysFont('menlo', font_size)
+font_size = 40
+font = pygame.font.Font("Font.ttf", font_size)
 
 
 tiles = [
@@ -39,27 +39,33 @@ row = 0
 tile_list = []
 
 
-def main():
+def main(tiles):
     row_count = 0
     for row in tiles:
         col = 0
         for tile in row:
             if tile == 1:
-                img = pygame.transform.scale(black, (40, 40))
+                img = pygame.transform.scale(black, (50, 50))
                 rect = img.get_rect()
                 rect.x = col * 40
                 rect.y = row_count * 40
                 tile = (img, rect)
                 tile_list.append(tile)
+            if tile == 2:
+                trash_sprite = Trash(col*40, row_count * 40)
+                trash_group.add(trash_sprite)
+            if tile == 3:
+                bag_sprite = Bag(col*40, row_count * 40)
+                bag_group.add(bag_sprite)
             col += 1
         row_count += 1
 def draw():
     for tile in tile_list:
         screen.blit(tile[0], tile[1])
 tile_size = 40
-class Player(pygame.sprite.Sprite):
+class Player():
     def __init__(self, x, y):
-        super().__init__()
+        super(Player, self).__init__()
         self.img = pygame.image.load("PlayerRight.png")
         self.rect = self.img.get_rect()
         self.width = self.img.get_width()
@@ -115,10 +121,23 @@ class Player(pygame.sprite.Sprite):
         # Draw the player
         screen.blit(self.img, self.rect)
 
-
+class Trash(pygame.sprite.Sprite):
+    def __init__(self,  x, y):
+        super(Trash, self).__init__()
+        self.image = pygame.transform.scale(trash, (80, 80))
+        self.rect = self.image.get_rect()
+        self.rect.x = x-40
+        self.rect.y  = y - 40
+class Bag(pygame.sprite.Sprite):
+    def __init__(self, x, y):
+        super(Bag, self).__init__()
+        self.image = pygame.transform.scale(bag, (80, 80))
+        self.rect = self.image.get_rect()
+        self.rect.x = x - 40
+        self.rect.y  = y - 40
 class Bunny(pygame.sprite.Sprite):
     def __init__(self, player):
-        super().__init__()
+        super(Bunny, self).__init__()
         self.direction = -1
         self.img = pygame.image.load("BunnyRight.png")
         self.rect = self.img.get_rect()
@@ -148,12 +167,7 @@ class Bunny(pygame.sprite.Sprite):
             elif self.rect.right >= 1000:
                 self.direction = -1
                 self.img = pygame.image.load("BunnyRight.png")
-        else:
-            text = Text("Please help me clean up my land, \n"
-                        "it has trash strewn everywhere!", font, 500, 100, 40)
 
-            text.draw_text()
-            return True
         for tile in tile_list:
             # check for collision in x axis
             if tile[1].colliderect(self.rect.x + dx, self.rect.y, self.width, self.height):
@@ -226,6 +240,25 @@ class Button:
         # draw button
         screen.blit(self.img, self.rect)
         return action
+def level1():
+    tiles = [
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 1],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 1, 1],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 1, 1, 1, 1, 1, 1],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+        [0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+        [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+        [1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+        [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+        [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+    ]
+    main(tiles)
+    draw()
 
 
 text = Text("People all around the have thrown\n"
@@ -239,20 +272,69 @@ pygame.display.update()
 time.sleep(3)
 player = Player(120, 20)
 bunny = Bunny(player)
-background = pygame.image.load("Background.jpeg")
-main()
+bunny_group = pygame.sprite.Group()
+bunny_group.add(bunny)
+background = pygame.image.load("Background.png")
+trash = pygame.image.load("Trash.png")
+bag = pygame.image.load("Bag.png")
+main(tiles)
 help_btn = Button(230, 180, "Help.png")
 ignore_btn = Button(560, 180, "Ignore.png")
+health = 3
+health_img = pygame.transform.scale(pygame.image.load("health.png"), (39, 30))
+bag_group = pygame.sprite.Group()
+trash_group = pygame.sprite.Group()
+bunny_hit = False
+coin = pygame.image.load("Coin.png")
+coin = pygame.transform.scale(coin, (40, 40))
+coin_rect = coin.get_rect()
+coin_rect.x = 900
+coin_rect.y = 10
+score = 0
 while True:
     screen.blit(background, (0, 0))
     draw()
-
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
     player.update()
-    if bunny.update():
-        help_btn.draw()
-        ignore_btn.draw()
+    for index, _ in enumerate(range(health)):
+        screen.blit(health_img, (10 + index * (tile_size+10), 10))
+    bunny_group.update()
+    if pygame.sprite.collide_rect(bunny, player) and (not bunny_hit):
+        text = Text("Please help me clean up my land, \n"
+                    "it has trash strewn everywhere!", font, 500, 100, 40)
+        text.draw_text()
+        if help_btn.draw():
+            level1()
+            bunny.kill()
+            bunny_hit = True
+        if ignore_btn.draw():
+            health-=1
+            bunny.kill()
+            bunny_hit = True
+
+    trash_group.draw(screen)
+    bag_group.draw(screen)
+    if pygame.sprite.spritecollide(player, trash_group, True):
+        score += 1
+    if pygame.sprite.spritecollide(player, bag_group, True):
+        score += 1
+    if health==0:
+        text = Text("You died", font, 500, 280, font_size)
+        time.sleep(5)
+        break
+    if score == 6:
+        screen.fill((0, 0, 0))
+        while True:
+            text = Text("You Beat Level One!\n"
+                        "You have to buy level 2 and 3\n"
+                        "but that feature hasn't been\n"
+                        "added yet!\n", font, 500, 280, font_size)
+            text.draw_text()
+            pygame.display.update()
+    text = font.render(f"X{score}", False, (255, 255, 255))
+    screen.blit(text, (940, 15))
+    screen.blit(coin, coin_rect)
     pygame.display.update()
